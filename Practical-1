@@ -1,0 +1,163 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node
+{
+    int bookID;
+    struct Node *left;
+    struct Node *right;
+};
+
+struct Node* createNode(int id)
+{
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->bookID = id;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+struct Node* insert(struct Node* root, int id)
+{
+    if(root == NULL)
+        return createNode(id);
+
+    if(id < root->bookID)
+        root->left = insert(root->left, id);
+    else if(id > root->bookID)
+        root->right = insert(root->right, id);
+
+    return root;
+}
+
+struct Node* search(struct Node* root, int id)
+{
+    if(root == NULL || root->bookID == id)
+        return root;
+
+    if(id < root->bookID)
+        return search(root->left, id);
+    else
+        return search(root->right, id);
+}
+
+struct Node* findMin(struct Node* root)
+{
+    while(root->left != NULL)
+        root = root->left;
+
+    return root;
+}
+
+struct Node* deleteNode(struct Node* root, int id)
+{
+    if(root == NULL)
+        return root;
+
+    if(id < root->bookID)
+        root->left = deleteNode(root->left, id);
+
+    else if(id > root->bookID)
+        root->right = deleteNode(root->right, id);
+
+    else
+    {
+        if(root->left == NULL)
+        {
+            struct Node* temp = root->right;
+            free(root);
+            return temp;
+        }
+
+        else if(root->right == NULL)
+        {
+            struct Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        struct Node* temp = findMin(root->right);
+        root->bookID = temp->bookID;
+        root->right = deleteNode(root->right, temp->bookID);
+    }
+
+    return root;
+}
+
+void inorder(struct Node* root)
+{
+    if(root != NULL)
+    {
+        inorder(root->left);
+        printf("%d ", root->bookID);
+        inorder(root->right);
+    }
+}
+
+void rangeSearch(struct Node* root, int low, int high)
+{
+    if(root == NULL)
+        return;
+
+    if(low < root->bookID)
+        rangeSearch(root->left, low, high);
+
+    if(root->bookID >= low && root->bookID <= high)
+        printf("%d ", root->bookID);
+
+    if(high > root->bookID)
+        rangeSearch(root->right, low, high);
+}
+
+int main()
+{
+    struct Node* root = NULL;
+    int choice, id, low, high;
+
+    while(1)
+    {
+        printf("\n1.Insert Book\n2.Search Book\n3.Delete Book\n4.Display Books\n5.Range Search\n6.Exit\n");
+        printf("Enter choice: ");
+        scanf("%d",&choice);
+
+        switch(choice)
+        {
+            case 1:
+                printf("Enter Book ID: ");
+                scanf("%d",&id);
+                root = insert(root,id);
+                break;
+
+            case 2:
+                printf("Enter Book ID to search: ");
+                scanf("%d",&id);
+
+                if(search(root,id))
+                    printf("Book Found\n");
+                else
+                    printf("Book Not Found\n");
+                break;
+
+            case 3:
+                printf("Enter Book ID to delete: ");
+                scanf("%d",&id);
+                root = deleteNode(root,id);
+                break;
+
+            case 4:
+                printf("Books in sorted order: ");
+                inorder(root);
+                break;
+
+            case 5:
+                printf("Enter range (low high): ");
+                scanf("%d %d",&low,&high);
+                printf("Books in range: ");
+                rangeSearch(root,low,high);
+                break;
+
+            case 6:
+                exit(0);
+        }
+    }
+}
