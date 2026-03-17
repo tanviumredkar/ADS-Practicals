@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <string.h>
+
+#define SIZE 10
+
+struct Parking
+{
+    char vehicle[20];
+};
+
+struct Parking table[SIZE];
+
+int hashFunction(char reg[])
+{
+    int sum = 0;
+    for(int i=0; reg[i]; i++)
+        sum += reg[i];
+    return sum % SIZE;
+}
+
+int insert(char reg[])
+{
+    int index = hashFunction(reg);
+    int start = index;
+    while(strlen(table[index].vehicle) != 0)
+    {
+        index = (index + 1) % SIZE;
+        if(index == start)
+            return -1;
+    }
+    strcpy(table[index].vehicle,reg);
+    return index;
+}
+
+void display()
+{
+    printf("\nParking Table\n");
+    for(int i=0;i<SIZE;i++)
+    {
+        if(strlen(table[i].vehicle)==0)
+            printf("%d : Empty\n",i);
+        else
+            printf("%d : %s\n",i,table[i].vehicle);
+    }
+}
+
+int main()
+{
+    int n;
+    char reg[20];
+    printf("Enter number of vehicles: ");
+    scanf("%d",&n);
+    for(int i=0;i<n;i++)
+    {
+        printf("Enter registration number: ");
+        scanf("%s",reg);
+        int spot = insert(reg);
+        if(spot == -1)
+            printf("Parking Full\n");
+        else
+            printf("Vehicle parked at spot %d\n",spot);
+    }
+    display();
+    return 0;
+}
