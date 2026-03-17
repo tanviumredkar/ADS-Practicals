@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct TrieNode
+{
+    struct TrieNode *children[26];
+    int end;
+};
+
+struct TrieNode* createNode()
+{
+    struct TrieNode *node = (struct TrieNode*)malloc(sizeof(struct TrieNode));
+    for(int i=0;i<26;i++)
+        node->children[i] = NULL;
+
+    node->end = 0;
+    return node;
+}
+
+void insert(struct TrieNode *root, char word[])
+{
+    struct TrieNode *temp = root;
+    for(int i=0; word[i]; i++)
+    {
+        int index = word[i] - 'a';
+
+        if(temp->children[index] == NULL)
+            temp->children[index] = createNode();
+
+        temp = temp->children[index];
+    }
+    temp->end = 1;
+}
+
+int search(struct TrieNode *root, char word[])
+{
+    struct TrieNode *temp = root;
+    for(int i=0; word[i]; i++)
+    {
+        int index = word[i] - 'a';
+        if(temp->children[index] == NULL)
+            return 0;
+        temp = temp->children[index];
+    }
+    return temp->end;
+}
+
+int main()
+{
+    struct TrieNode *root = createNode();
+    char words[][20] = {
+        "and","bat","ball","book","cot","cotton",
+        "internet","interview","joy","job",
+        "king","lion","man","mango","manage"
+    };
+    int n = 15;
+    for(int i=0;i<n;i++)
+        insert(root,words[i]);
+    char key[20];
+    printf("Enter word to search: ");
+    scanf("%s",key);
+
+    if(search(root,key))
+        printf("Word found in Trie\n");
+    else
+        printf("Word NOT found\n");
+
+    return 0;
+}
