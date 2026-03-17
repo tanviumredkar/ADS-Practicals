@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+#define MAX 100
+
+int n;
+int adj[MAX][MAX];
+
+void dfs(int node, int visited[], int failed) {
+    if(node == failed) return;
+    visited[node] = 1;
+
+    for(int i = 0; i < n; i++) {
+        if(i != failed && adj[node][i] && !visited[i]) {
+            dfs(i, visited, failed);
+        }
+    }
+}
+
+int isConnected(int failed) {
+    int visited[MAX] = {0};
+    int start = (failed == 0) ? 1 : 0;
+    dfs(start, visited, failed);
+
+    for(int i = 0; i < n; i++) {
+        if(i != failed && visited[i] == 0)
+            return 0;
+    }
+    return 1;
+}
+
+int main() {
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter adjacency matrix (%d x %d):\n", n, n);
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            scanf("%d", &adj[i][j]);
+
+    printf("\nSingle node failure detection:\n");
+    for(int i = 0; i < n; i++) {
+        if(isConnected(i))
+            printf("Node %d failure does NOT disconnect the network.\n", i);
+        else
+            printf("Node %d failure DISCONNECTS the network!\n", i);
+    }
+
+    return 0;
+}
