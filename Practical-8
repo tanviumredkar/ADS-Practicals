@@ -1,0 +1,59 @@
+#include <stdio.h>
+#define MAX 100
+
+int parent[MAX];
+int rank[MAX];
+
+void makeSet(int n) {
+    for(int i = 0; i < n; i++) {
+        parent[i] = i;
+        rank[i] = 0;
+    }
+}
+
+int find(int x) {
+    if(parent[x] != x)
+        parent[x] = find(parent[x]);
+    return parent[x];
+}
+
+void unionSmart(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if(rootX == rootY)
+        return;
+
+    if(rank[rootX] < rank[rootY]) {
+        parent[rootX] = rootY;
+    }
+    else if(rank[rootX] > rank[rootY]) {
+        parent[rootY] = rootX;
+    }
+    else {
+        parent[rootY] = rootX;
+        rank[rootX]++;
+    }
+}
+
+void displaySets(int n) {
+    printf("\nElement : Parent\n");
+    for(int i = 0; i < n; i++)
+        printf("%d : %d\n", i, parent[i]);
+}
+
+int main() {
+    int n = 7;
+    makeSet(n);
+
+    unionSmart(0,1);
+    unionSmart(1,2);
+    unionSmart(3,4);
+
+    printf("Set representatives:\n");
+    for(int i = 0; i < n; i++)
+        printf("Student %d -> group leader: %d\n", i, find(i));
+
+    displaySets(n);
+    return 0;
+}
